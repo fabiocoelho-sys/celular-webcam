@@ -13,7 +13,7 @@
   <a href="../../releases/latest"><b>Baixar a última versão</b></a>
 </p>
 
-![Programa do PC mostrando a imagem do celular e os ajustes da câmera](docs/tela.png)
+![Programa do PC mostrando a imagem do celular e os ajustes da câmera](docs/programa-pc.png)
 
 ## O que é
 
