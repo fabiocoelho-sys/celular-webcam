@@ -1,0 +1,17 @@
+# Informacoes de versao do CelularWebcam.exe (formato do PyInstaller).
+# O gerar-versao.ps1 troca {V1}..{V3} e {VERSAO} pela versao atual.
+VSVersionInfo(
+  ffi=FixedFileInfo(filevers=({V1}, {V2}, {V3}, 0), prodvers=({V1}, {V2}, {V3}, 0)),
+  kids=[
+    StringFileInfo([StringTable('041604B0', [
+      StringStruct('CompanyName', 'Celular Webcam'),
+      StringStruct('FileDescription', 'Celular Webcam'),
+      StringStruct('FileVersion', '{VERSAO}'),
+      StringStruct('InternalName', 'CelularWebcam'),
+      StringStruct('LegalCopyright', 'Licença MIT'),
+      StringStruct('OriginalFilename', 'CelularWebcam.exe'),
+      StringStruct('ProductName', 'Celular Webcam'),
+      StringStruct('ProductVersion', '{VERSAO}')])]),
+    VarFileInfo([VarStruct('Translation', [1046, 1200])])
+  ]
+)

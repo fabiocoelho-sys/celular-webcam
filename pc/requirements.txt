@@ -1,0 +1,4 @@
+av>=14
+numpy
+sounddevice
+pillow

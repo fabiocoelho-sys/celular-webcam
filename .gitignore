@@ -1,0 +1,25 @@
+# Chave de assinatura do app: NUNCA publicar
+android/keystore/
+*.jks
+*.keystore
+keystore.properties
+
+# Notas pessoais do projeto
+NOTAS.md
+celular-webcam.md
+
+# Arquivos gerados
+.gradle/
+build/
+__pycache__/
+*.pyc
+*.apk
+*.exe
+*.dll
+apk/
+instalador/pronto/
+pc/vcam/bin/
+pc/adb/
+
+# O script do Gradle precisa do seu proprio jar
+!android/gradle/wrapper/gradle-wrapper.jar
