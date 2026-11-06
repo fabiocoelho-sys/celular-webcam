@@ -40,6 +40,7 @@ BRANCO = {
     "warm": "Fluorescente quente", "shade": "Sombra", "twilight": "Crepúsculo",
 }
 ROTACOES = ["0°", "90°", "180°", "270°"]
+BATERIA_BAIXA = 15  # %, a partir daqui o texto fica vermelho
 
 
 def carregar_config():
@@ -145,6 +146,10 @@ class App:
         self.bt_procurar.pack(side="left", padx=8)
         self.bt_conectar = ttk.Button(topo, text="Conectar", command=self.alternar_conexao, style="Accent.TButton")
         self.bt_conectar.pack(side="left")
+
+        self.bateria = tk.StringVar()
+        self.lb_bateria = ttk.Label(topo, textvariable=self.bateria)
+        self.lb_bateria.pack(side="right")
 
         self.status = tk.StringVar(value="Abra o app Celular Webcam no celular.")
         ttk.Label(self.root, textvariable=self.status, style="Status.TLabel", padding=(18, 0)).pack(fill="x")
@@ -394,6 +399,16 @@ class App:
             self.usar_mic.set(bool(self.estado.get("audio")))
         self._sincronizar_audio()
 
+    def _mostrar_bateria(self, bat):
+        """bat = {"level": 0-100, "charging": bool}; None limpa (celular desconectado)."""
+        if not bat:
+            self.bateria.set("")
+            return
+        nivel = bat["level"]
+        self.bateria.set(f"Bateria do celular: {nivel}%" + (" · carregando" if bat.get("charging") else ""))
+        baixa = nivel <= BATERIA_BAIXA and not bat.get("charging")
+        self.lb_bateria.configure(style="BateriaBaixa.TLabel" if baixa else "TLabel")
+
     def _restaurar(self):
         self.enviar({"ev": 0, "afAuto": True, "awb": "auto", "aeManual": False, "aeLock": False,
                      "awbLock": False, "lowLight": False, "zoom": 1.0}, ja=True)
@@ -480,6 +495,7 @@ class App:
         self.status.set("Desconectado.")
         self.previa.configure(image="", text="Sem imagem")
         self._foto = None
+        self._mostrar_bateria(None)
         self._painel_vazio()
 
     def enviar(self, patch, ja=False):
@@ -566,6 +582,7 @@ class App:
             self.estado = dict(hello.get("s", {}))
             self._painel_camera_id = None
             self._aplicar_estado()
+            self._mostrar_bateria(hello.get("bat"))
             via = "cabo USB" if modo == "usb" else f"Wi-Fi ({host})"
             self.status.set(f"Conectado ao {self.nome_celular} pelo {via}.")
             if modo == "wifi":
@@ -575,6 +592,8 @@ class App:
             if c is not self.conn:
                 return
             t = msg.get("t")
+            if "bat" in msg:
+                self._mostrar_bateria(msg["bat"])
             if t in ("state", "hello"):
                 self.estado = dict(msg.get("s", {}))
                 self._aplicar_estado()
@@ -586,6 +605,7 @@ class App:
                 return
             self.conn = None
             self.audio.parar()
+            self._mostrar_bateria(None)
             if self.quer_conectar:
                 self.status.set(f"Conexão perdida ({motivo}). Tentando de novo...")
                 self.root.after(1500, lambda: self.quer_conectar and self.conn is None and self._reconectar())

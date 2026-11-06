@@ -2,9 +2,13 @@ package com.fabio.celularwebcam
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
+import android.os.BatteryManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -55,6 +59,13 @@ class WebcamEngine private constructor(context: Context) : CameraStreamer.Listen
 
     private val idleStop = Runnable { WebcamService.stop(app) }
 
+    /** Ultimo estado da bateria, ja no formato enviado ao PC. */
+    @Volatile private var battery: JSONObject? = null
+
+    private val batteryReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) = updateBattery(intent)
+    }
+
     @SuppressLint("WakelockTimeout")
     @Synchronized
     fun start() {
@@ -75,9 +86,25 @@ class WebcamEngine private constructor(context: Context) : CameraStreamer.Listen
         wakeLock = (app.getSystemService(Context.POWER_SERVICE) as PowerManager)
             .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "celular-webcam:stream").apply { acquire() }
 
+        // Ja devolve o valor atual, para ele ir junto no primeiro contato com o PC
+        app.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))?.let(::updateBattery)
+
         server.start()
         discovery.start()
         syncCamera()
+    }
+
+    /** O Android avisa varias vezes por minuto: so repassa ao PC quando algo mudou. */
+    private fun updateBattery(intent: Intent) {
+        val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+        val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+        if (level < 0 || scale <= 0) return
+        val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, BatteryManager.BATTERY_STATUS_UNKNOWN)
+        val charging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL
+        val now = JSONObject().put("level", level * 100 / scale).put("charging", charging)
+        if (now.toString() == battery?.toString()) return
+        battery = now
+        server.sendJson(JSONObject().put("t", "battery").put("bat", now))
     }
 
     /** A tela do app apareceu ou sumiu (bloqueio, botao Inicio...). */
@@ -109,6 +136,7 @@ class WebcamEngine private constructor(context: Context) : CameraStreamer.Listen
             .put("t", type)
             .put("s", streamer.snapshot().toJson())
             .put("rot", streamer.uprightRotation())
+        battery?.let { msg.put("bat", it) }
         if (type == "hello") {
             msg.put("name", deviceName)
             msg.put("cameras", JSONArray(streamer.cameras.map { it.toJson() }))
@@ -124,6 +152,7 @@ class WebcamEngine private constructor(context: Context) : CameraStreamer.Listen
         audio.stop()
         discovery.stop()
         server.stop()
+        runCatching { app.unregisterReceiver(batteryReceiver) }
         streamer.release()
         wifiLocks.forEach { runCatching { it.release() } }
         wifiLocks = emptyList()

@@ -22,6 +22,7 @@ O Celular Webcam faz o Windows enxergar o seu celular como uma webcam de verdade
 São duas partes que trabalham juntas: um app no celular e um programa no PC. Depois de conectar, você não precisa mais encostar no celular:
 
 - **Todos os ajustes são feitos pelo PC:** zoom, brilho, foco, balanço de branco, ISO, obturador, lanterna, resolução, FPS e qualidade.
+- **Bateria do celular na tela do PC:** a porcentagem aparece no programa, pelo Wi-Fi e pelo cabo, sem precisar mexer no aparelho.
 - **Funciona com o celular bloqueado:** a tela apaga, a bateria dura mais e o vídeo continua.
 - **Funciona pelo Wi-Fi ou pelo cabo USB.**
 - **Serve para celulares antigos:** roda a partir do Android 6 e mostra só os ajustes que a câmera do aparelho aceita.

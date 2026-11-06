@@ -10,6 +10,7 @@ celular-webcam.md
 
 # Arquivos gerados
 .gradle/
+.kotlin/
 build/
 __pycache__/
 *.pyc

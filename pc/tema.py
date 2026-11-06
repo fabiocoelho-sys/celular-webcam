@@ -21,6 +21,7 @@ DESATIVADO = "#5f6674"
 DESTAQUE = "#4f7cff"
 DESTAQUE_HOVER = "#6b92ff"
 DESTAQUE_PRESS = "#3f68e0"
+ALERTA = "#ff6b6b"
 
 _imagens = []  # o Tk nao guarda referencia: sem isto as imagens somem
 
@@ -113,6 +114,7 @@ def aplicar(root):
     s.configure("TLabel", background=FUNDO, foreground=TEXTO)
     s.configure("Status.TLabel", foreground=TEXTO2)
     s.configure("Rotulo.TLabel", foreground=TEXTO2)
+    s.configure("BateriaBaixa.TLabel", foreground=ALERTA)
 
     # ---- botoes
     r = 8

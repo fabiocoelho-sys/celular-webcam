@@ -20,8 +20,8 @@ android {
         applicationId = "com.fabio.celularwebcam"
         minSdk = 23 // Android 6: cobre aparelhos antigos como o Xperia XA (F3116)
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.2.0"
+        versionCode = 5
+        versionName = "1.3.0"
     }
 
     signingConfigs {
